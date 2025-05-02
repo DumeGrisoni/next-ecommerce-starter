@@ -12,7 +12,6 @@ const checkAuth = async () => {
     try {
       const { account } = await createSessionClient(sessionCookie);
       const user = await account.get();
-      console.log(user);
       return {
         isAuthenticated: true,
         user: {

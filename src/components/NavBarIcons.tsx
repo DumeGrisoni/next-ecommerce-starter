@@ -2,12 +2,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
 import CartModal from './CartModal';
+import destroySession from '@/actions/destroySession';
 import { useAuth } from '@/context/authContext';
 
 const NavBarIcons = () => {
-  const { user, isUserAuthenticated } = useAuth();
+  const { user, isUserAuthenticated, setIsUserAuthenticated, setUser } =
+    useAuth();
 
   const [isProfilOpen, setIsProfilOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -23,7 +27,24 @@ const NavBarIcons = () => {
     setIsProfilOpen(!isProfilOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const { error, success } = await destroySession();
+    if (error) {
+      console.log(error);
+      toast.error(error, {
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    } else if (success) {
+      setIsUserAuthenticated(false);
+      setUser(null);
+      router.push('/login');
+    }
     setIsCartOpen(false);
     setIsProfilOpen(false);
   };

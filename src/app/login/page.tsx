@@ -14,7 +14,7 @@ const Login = () => {
   // ---------------- Hooks -----------------------------
 
   const [state, formAction, isPending] = useFormState(createSession, undefined);
-  const { setIsUserAuthenticated } = useAuth();
+  const { setIsUserAuthenticated, user } = useAuth();
   const router = useRouter();
 
   // ---------------- use Effect -----------------------------
