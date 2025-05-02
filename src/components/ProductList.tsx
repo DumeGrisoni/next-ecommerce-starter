@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { getAllProducts } from '@/actions/getAllProducts';
+import { getAllProducts } from '@/actions/productsCRUD';
 
 const ProductList = async () => {
-  const products = await getAllProducts();
+  // const products = await getAllProducts();
 
   return (
     <div className=" mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">

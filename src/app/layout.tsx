@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AuthWrapper from '@/components/AuthWrapper';
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,12 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        <Navbar />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <AuthWrapper>
+      <html lang="fr">
+        <body className={inter.className}>
+          <Navbar />
+          {children}
+          <Footer />
+          <ToastContainer />
+        </body>
+      </html>
+    </AuthWrapper>
   );
 }

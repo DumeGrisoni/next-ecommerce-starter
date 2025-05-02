@@ -12,7 +12,8 @@
     "next": "14.2.2",
     "node-appwrite": "^16.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@types/node": "^20",

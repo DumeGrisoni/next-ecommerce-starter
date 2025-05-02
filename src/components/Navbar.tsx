@@ -14,7 +14,7 @@ const Navbar = () => {
         <Link href={'/'}>
           <p className="text-2xl tracking-wide">NOVAMARKET</p>
         </Link>
-        <Menu />
+        <Menu isDesktop={false} />
       </div>
       {/* TABLET & PC */}
       <div className="hidden md:flex items-center h-full justify-between gap-8">
@@ -24,13 +24,7 @@ const Navbar = () => {
             <Image src={'logo.svg'} width={24} height={24} alt={'logo'} />
             <p className="text-2xl tracking-wide">NOVAMARKET</p>
           </Link>
-          <div className="hidden xl:flex gap-4">
-            <Link href={'/'}>Home</Link>
-            <Link href={'/Shop'}>Shop</Link>
-            <Link href={'/Deals'}>Deals</Link>
-            <Link href={'/Logout'}>Logout</Link>
-            <Link href={'/Cart'}>Cart(1)</Link>
-          </div>
+          <Menu isDesktop />
         </div>
         {/* RIGHT */}
         <div className="xl:w-1/2 w-2/3 flex items-center justify-between gap-8">
