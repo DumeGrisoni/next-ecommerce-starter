@@ -1,5 +1,6 @@
 'use server';
 import { createSessionClient } from '@/config/appwrite';
+import { User } from '@/types/userType';
 import { cookies } from 'next/headers';
 
 const checkAuth = async () => {
@@ -19,7 +20,7 @@ const checkAuth = async () => {
           name: user.name,
           email: user.email,
           labels: user.labels,
-        },
+        } as User,
       };
     } catch (error) {
       console.log(error);

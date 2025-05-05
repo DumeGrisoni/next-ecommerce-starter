@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage } from 'node-appwrite';
+import { Client, Account, Databases, Storage, Users } from 'node-appwrite';
 
 // ADMIN
 const createAdminClient = async () => {
@@ -16,6 +16,9 @@ const createAdminClient = async () => {
     },
     get storage() {
       return new Storage(client);
+    },
+    get users() {
+      return new Users(client);
     },
   };
 };

@@ -8,7 +8,7 @@ const CategoryList = () => {
       <div className="flex gap-4 md:gap-8">
         <Link
           href={`/list?cat=test`}
-          className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 xl:w-1/6"
+          className="flex-shrink-0 w-[90%] sm:w-1/2 lg:w-1/4 xl:w-1/6"
         >
           <div className="relative bg-gray-slate-100 w-full h-96">
             <Image
@@ -21,7 +21,7 @@ const CategoryList = () => {
               className="object-cover"
             />
           </div>
-          <h1 className="mt-8 font-light text-xl tracking-wide">
+          <h1 className="mt-8 font-medium text-lg tracking-wide">
             Category Name
           </h1>
         </Link>

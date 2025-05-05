@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import CartModal from './CartModal';
@@ -69,6 +69,7 @@ const NavBarIcons = () => {
             <Link
               href={'/profile/admin'}
               className=" hover:bg-gray-200 p-2 rounded-md"
+              onClick={() => setIsProfilOpen(false)}
             >
               Administration
             </Link>
@@ -76,6 +77,7 @@ const NavBarIcons = () => {
             <Link
               href={'/profile/user'}
               className=" hover:bg-gray-200 p-2 rounded-md"
+              onClick={() => setIsProfilOpen(false)}
             >
               Profile
             </Link>

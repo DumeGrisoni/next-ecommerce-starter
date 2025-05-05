@@ -1,8 +1,24 @@
 'use server';
+
 import { createAdminClient } from '@/config/appwrite';
 import { ID } from 'node-appwrite';
 
-const createUser = async (previousState: unknown, formData: FormData) => {
+export async function getUsers() {
+  const client = await createAdminClient();
+  const users = await client.users.list();
+  return users;
+}
+
+export async function getUser(id: string) {
+  const client = await createAdminClient();
+  const user = await client.users.get(id);
+  return user;
+}
+
+export const createUser = async (
+  previousState: unknown,
+  formData: FormData
+) => {
   //--------------- Variables -----------------
 
   const name = formData.get('name') as string;
@@ -40,5 +56,3 @@ const createUser = async (previousState: unknown, formData: FormData) => {
     }
   }
 };
-
-export default createUser;
