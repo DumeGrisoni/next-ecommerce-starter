@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,9 +13,11 @@ interface ISelectProps {
     key: string;
     value: string;
   }[];
-  onChange: (selectedItems: { key: string; value: string }[]) => void;
+  name: string;
+  id: string;
+  onChange: (items: { key: string; value: string }[]) => void;
 }
-const MultiSelect = ({ values, onChange }: ISelectProps) => {
+const MultiSelect = ({ values, name, onChange }: ISelectProps) => {
   const [selectedItems, setSelectedItems] = useState<
     { key: string; value: string }[]
   >([]);
@@ -25,11 +27,15 @@ const MultiSelect = ({ values, onChange }: ISelectProps) => {
     if (existingItem) {
       newItems = newItems.filter((item) => item.key !== value.key);
     } else {
-      newItems.push(value);
+      newItems.push({ key: value.key, value: value.value });
     }
     setSelectedItems(newItems);
     onChange(newItems);
   };
+
+  useEffect(() => {
+    console.log('Multi', selectedItems);
+  }, [selectedItems]);
 
   const isOptionSelected = (key: string): boolean => {
     return selectedItems.find((item) => item.key === key) !== undefined;
@@ -40,7 +46,7 @@ const MultiSelect = ({ values, onChange }: ISelectProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="flex gap-2">
-            <span>Choisir les catégories</span>
+            <span>Choisir les {name}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -56,8 +62,9 @@ const MultiSelect = ({ values, onChange }: ISelectProps) => {
                 key={index}
                 checked={isOptionSelected(value.key)}
                 onCheckedChange={() => {
-                  handleSelectChange({ key: value.key, value: value.value });
+                  handleSelectChange(value);
                   // Appel de la fonction onChange avec les items sélectionnés
+                  // onChange(selectedItems);
                 }}
               >
                 {value.value}

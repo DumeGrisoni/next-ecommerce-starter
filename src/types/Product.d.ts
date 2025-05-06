@@ -9,6 +9,6 @@ export type Product = Models.Document & {
   price: number;
   rating: number;
   category: string;
+  ofWeek: boolean;
   genre: string;
-  colors: string[];
 };

@@ -3,8 +3,10 @@ import Link from 'next/link';
 import React from 'react';
 import { getAllProducts } from '@/actions/productsCRUD';
 
-const ProductList = async () => {
-  const products = await getAllProducts();
+const ProductOfWeek = async () => {
+  const productsData = await getAllProducts();
+  const filtered = productsData.filter((product) => product.ofWeek === true);
+  const products = filtered.slice(0, 4);
 
   const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES;
   const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
@@ -157,4 +159,4 @@ const ProductList = async () => {
   );
 };
 
-export default ProductList;
+export default ProductOfWeek;

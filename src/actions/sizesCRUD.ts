@@ -5,99 +5,99 @@ import { redirect } from 'next/navigation';
 import checkAuth from './checkAuth';
 import { ID } from 'node-appwrite';
 
-export async function getAllColors() {
+export async function getAllSizes() {
   try {
     const { databases } = await createAdminClient();
 
-    const { documents: colors } = await databases.listDocuments(
+    const { documents: sizes } = await databases.listDocuments(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
-      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SIZES as string
     );
 
-    return colors;
+    return sizes;
   } catch (error) {
     console.log(
-      'Une erreur est survenue lors de la récupération des couleurs',
+      'Une erreur est survenue lors de la récupération des tailles',
       error
     );
     return redirect('/');
   }
 }
 
-export async function getOneColor(id: string) {
+export async function getOneSize(id: string) {
   try {
     const { databases } = await createAdminClient();
 
-    const { color } = await databases.getDocument(
+    const { size } = await databases.getDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
-      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SIZES as string,
       id as string
     );
 
-    return color;
+    return size;
   } catch (error) {
     console.log(
-      'Une erreur est survenue lors de la récupération de la couleur',
+      'Une erreur est survenue lors de la récupération de la taille',
       error
     );
     return redirect('/');
   }
 }
 
-export async function createColor(previousState: unknown, FormData: FormData) {
+export async function createSize(previousState: unknown, FormData: FormData) {
   const { databases } = await createAdminClient();
   try {
     const { user } = await checkAuth();
 
     if (!user) {
       return {
-        error: 'Vous devez être connecté pour ajouter une couleur',
+        error: 'Vous devez être connecté pour ajouter une taille',
       };
     }
 
-    const colorId = ID.unique();
+    const sizeId = ID.unique();
+
     await databases.createDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
-      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string,
-      colorId,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SIZES as string,
+      sizeId as string,
       {
         name: FormData.get('name') as string,
-        hex: FormData.get('hex') as string,
       }
     );
 
     return { success: true };
   } catch (error) {
-    console.log("Une erreur est survenue lors de l'ajout de la couleur", error);
+    console.log("Une erreur est survenue lors de l'ajout de la taille", error);
     return redirect('/');
   }
 }
 
-export async function deleteColor(id: string) {
+export async function deleteSize(id: string) {
   try {
     const { databases } = await createAdminClient();
 
     await databases.deleteDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
-      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SIZES as string,
       id as string
     );
   } catch (error) {
     console.log(
-      'Une erreur est survenue lors de la suppression de la couleur',
+      'Une erreur est survenue lors de la suppression de la taille',
       error
     );
     return redirect('/');
   }
 }
 
-export async function updateColor(id: string, name: string) {
+export async function updateSize(id: string, name: string) {
   try {
     const { databases } = await createAdminClient();
 
     await databases.updateDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
-      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SIZES as string,
       id as string,
       {
         name,
@@ -105,7 +105,7 @@ export async function updateColor(id: string, name: string) {
     );
   } catch (error) {
     console.log(
-      'Une erreur est survenue lors de la mise à jour de la couleur',
+      'Une erreur est survenue lors de la mise à jour de la taille',
       error
     );
     return redirect('/');

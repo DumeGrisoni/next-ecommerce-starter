@@ -8,6 +8,9 @@ import AdminModifyOrder from '@/components/admin/orders/AdminModifyOrder';
 import AdminListUsers from '@/components/admin/users/AdminListUsers';
 import AdminModifyUser from '@/components/admin/users/AdminModifyUser';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminAddCategory from '@/components/admin/products/AdminAddCategory';
+import AdminAddColor from '@/components/admin/products/AdminAddColor';
+import AdminAddSize from '@/components/admin/products/AdminAddSize';
 
 const AdminDashboard = () => {
   return (
@@ -26,7 +29,7 @@ const AdminDashboard = () => {
         </TabsList>
         <div className="h-px bg-gray-200 my-3 mx-auto w-[95%] " />
 
-        <TabsContent value="tab1" className="w-full">
+        <TabsContent value="tab1" className="w-full py-3">
           <Tabs
             className="w-full flex-1 flex-col items-center mt-6"
             defaultValue="tab1"
@@ -45,13 +48,26 @@ const AdminDashboard = () => {
               >
                 Ajouter un produit
               </TabsTrigger>
+              <TabsTrigger
+                value="tab3"
+                className="text-xs font-medium data-[state=active]:!bg-slate-400"
+              >
+                Ajouter des options
+              </TabsTrigger>
             </TabsList>
-            <div className="h-px bg-gray-200 my-3 mx-auto w-[95%] " />
+            <div className="h-px bg-gray-200 my-3 mx-auto w-[70%] " />
             <TabsContent value="tab1" className="w-full">
               <AdminListProducts />
             </TabsContent>
             <TabsContent value="tab2" className="w-full">
               <AdminAddProduct />
+            </TabsContent>
+            <TabsContent value="tab3" className="w-full">
+              <AdminAddCategory />
+              <div className="w-[90%] mx-auto h-[2px] bg-slate-200 my-10" />
+              <AdminAddColor />
+              <div className="w-[90%] mx-auto h-[2px] bg-slate-200 my-10" />
+              <AdminAddSize />
             </TabsContent>
           </Tabs>
         </TabsContent>

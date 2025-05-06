@@ -22,6 +22,9 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'app-uploads-cdn.fera.ai',
       },
+      {
+        hostname: 'cloud.appwrite.io',
+      },
     ],
   },
 };
