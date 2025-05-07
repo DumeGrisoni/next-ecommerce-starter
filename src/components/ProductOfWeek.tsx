@@ -1,10 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { getAllProducts } from '@/actions/productsCRUD';
+import { Product } from '@/types/Product';
 
-const ProductOfWeek = async () => {
-  const productsData = await getAllProducts();
+const ProductOfWeek = ({ productsData }: { productsData: Product[] }) => {
   const filtered = productsData.filter((product) => product.ofWeek === true);
   const products = filtered.slice(0, 4);
 

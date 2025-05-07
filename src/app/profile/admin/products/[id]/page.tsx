@@ -1,6 +1,7 @@
 'use client';
 import { getAllCategories } from '@/actions/categoriesCRUD';
 import { getOneProduct, updateProduct } from '@/actions/productsCRUD';
+import AdminAddColors from '@/components/admin/products/AdminAddColors';
 import MultiSelect from '@/components/MultiSelect';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types/Product';
@@ -285,6 +286,13 @@ const UpdateProduct = ({ params }: { params: { id: string } }) => {
                 />
               </button>
             </div>
+          </div>
+          <div>
+            <label htmlFor="sizes" className="text-slate-600 font-semibold">
+              Tailles
+            </label>
+            {/* AJOUTER LE SYSTEME */}
+            <AdminAddColors product={product} />
           </div>
           <Button
             disabled={isPending}

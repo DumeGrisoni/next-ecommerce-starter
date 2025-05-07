@@ -2,10 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-import { getAllProducts } from '@/actions/productsCRUD';
+import { Product } from '@/types/Product';
 
-const NewProducts = async () => {
-  const productsData = await getAllProducts();
+const NewProducts = ({ productsData }: { productsData: Product[] }) => {
   const sortedProducts = productsData.sort((a, b) => {
     const createdAtA = new Date(a.$createdAt).getTime();
     const createdAtB = new Date(b.$createdAt).getTime();

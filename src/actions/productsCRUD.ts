@@ -5,6 +5,7 @@ import { createAdminClient } from '../config/appwrite';
 import { redirect } from 'next/navigation';
 import { ID } from 'node-appwrite';
 import checkAuth from './checkAuth';
+import { Variant } from '@/types/Variants';
 
 const bucketID = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES as string;
 const projectID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID as string;
@@ -44,6 +45,27 @@ export async function getAllProducts() {
   } catch (error) {
     console.log(
       'Une erreur est survenue lors de la récupération des produits',
+      error
+    );
+    return redirect('/');
+  }
+}
+
+export async function getAllProductVariants(id: string) {
+  try {
+    const { databases } = await createAdminClient();
+
+    const { documents: variants } = await databases.listDocuments(
+      process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_VARIANTS as string
+    );
+    const filteredVariants = variants.filter(
+      (variant: Variant) => variant.product.$id === id
+    ) as Variant[];
+    return filteredVariants;
+  } catch (error) {
+    console.log(
+      'Une erreur est survenue lors de la récupération des variants',
       error
     );
     return redirect('/');

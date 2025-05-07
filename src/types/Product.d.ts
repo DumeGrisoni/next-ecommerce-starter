@@ -1,5 +1,6 @@
 import { Models } from 'node-appwrite';
 import { Categories } from './Categories';
+import { Variant } from './Variants';
 
 export type Product = Models.Document & {
   name: string;
@@ -12,4 +13,5 @@ export type Product = Models.Document & {
   categories: Categories[];
   ofWeek: boolean;
   genres: string[];
+  variants: Variant[];
 };

@@ -4,6 +4,7 @@ import { createAdminClient } from '../config/appwrite';
 import { redirect } from 'next/navigation';
 import checkAuth from './checkAuth';
 import { ID } from 'node-appwrite';
+import { Color } from '@/types/Color';
 
 export async function getAllColors() {
   try {
@@ -14,7 +15,7 @@ export async function getAllColors() {
       process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_COLORS as string
     );
 
-    return colors;
+    return colors as Color[];
   } catch (error) {
     console.log(
       'Une erreur est survenue lors de la récupération des couleurs',
