@@ -6,6 +6,12 @@ import { redirect } from 'next/navigation';
 import { ID } from 'node-appwrite';
 import checkAuth from './checkAuth';
 
+const bucketID = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES as string;
+const projectID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID as string;
+const databaseID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string;
+const productCollection = process.env
+  .NEXT_PUBLIC_APPWRITE_COLLECTION_DATAS as string;
+
 export async function getOneProduct(id: string) {
   try {
     const { databases } = await createAdminClient();
@@ -22,7 +28,6 @@ export async function getOneProduct(id: string) {
       'Une erreur est survenue lors de la récupération du produit',
       error
     );
-    return redirect('/');
   }
 }
 
@@ -171,9 +176,183 @@ export async function createProduct(
       }
     );
 
-    return { success: true };
+    return { success: true, id: productId };
   } catch (error) {
     console.log("Une erreur est survenue lors de l'ajout du produit", error);
     return redirect('/');
   }
 }
+
+export const updateProduct = async (
+  previousState: unknown,
+  FormData: FormData
+) => {
+  // GET DATABASE INSTANCE
+  const { databases, storage } = await createAdminClient();
+  try {
+    const id = FormData.get('id') as string;
+
+    const productToUpdate = await databases.getDocument(
+      process.env.NEXT_PUBLIC_APPWRITE_DATABASE as string,
+      process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_DATAS as string,
+      id
+    );
+
+    if (!productToUpdate) {
+      console.log('Aucun produit trouvé');
+      return null;
+    }
+
+    // GET USER ID
+    const { user } = await checkAuth();
+
+    if (!user || !user.labels.includes('admin')) {
+      return {
+        error: 'Veuillez vous connecter pour modifier un produit',
+      };
+    }
+
+    const price = Number(
+      (FormData.get('price') as string)?.replace(',', '.') ?? ''
+    );
+
+    // UPDATE IMAGES
+    let mainImageId;
+    let secondImageId;
+    let thirdImageId;
+
+    const mainImage = FormData.get('mainImage') as File | null;
+    const secondImage = FormData.get('secondImage') as File | null;
+    const thirdImage = FormData.get('thirdImage') as File | null;
+
+    console.log(mainImage?.name);
+
+    if (mainImage !== null && mainImage.name !== 'undefined') {
+      try {
+        const oldMainImage = await storage.getFile(
+          bucketID,
+          productToUpdate.mainImage
+        );
+
+        // MODIFY IMAGE
+
+        await storage.deleteFile(bucketID, oldMainImage.$id);
+
+        const adding = await storage.createFile(
+          'images',
+          ID.unique(),
+          mainImage
+        );
+
+        mainImageId = adding.$id;
+      } catch (error) {
+        console.log(
+          'Une erreur est survenue lors de la modification de la main Image',
+          error
+        );
+        return {
+          error:
+            'Une erreur est survenue lors de la modification de la main Image',
+        };
+      }
+    } else {
+      mainImageId = productToUpdate.mainImage as string;
+    }
+
+    if (secondImage !== null && secondImage.name !== 'undefined') {
+      try {
+        const oldSecondImage = await storage.getFile(
+          bucketID,
+          productToUpdate.secondImage
+        );
+
+        // MODIFY IMAGE
+
+        await storage.deleteFile(bucketID, oldSecondImage.$id);
+
+        const adding = await storage.createFile(
+          'images',
+          ID.unique(),
+          secondImage
+        );
+
+        secondImageId = adding.$id;
+      } catch (error) {
+        console.log(
+          'Une erreur est survenue lors de la modification de la 2e Image',
+          error
+        );
+        return {
+          error:
+            'Une erreur est survenue lors de la modification de la 2e Image',
+        };
+      }
+    } else {
+      secondImageId = productToUpdate.secondImage as string;
+    }
+
+    if (thirdImage !== null && thirdImage.name !== 'undefined') {
+      try {
+        const oldThirdImage = await storage.getFile(
+          bucketID,
+          productToUpdate.thirdImage
+        );
+
+        // MODIFY IMAGE
+
+        await storage.deleteFile(bucketID, oldThirdImage.$id);
+
+        const adding = await storage.createFile(
+          'images',
+          ID.unique(),
+          thirdImage
+        );
+
+        thirdImageId = adding.$id;
+      } catch (error) {
+        console.log(
+          'Une erreur est survenue lors de la modification de la 3eme Image',
+          error
+        );
+        return {
+          error:
+            'Une erreur est survenue lors de la modification de la 3eme Image',
+        };
+      }
+    } else {
+      secondImageId = productToUpdate.secondImage as string;
+    }
+
+    //UPDATE PRODUCT
+
+    await databases.updateDocument(
+      databaseID,
+      productCollection,
+      productToUpdate.$id,
+      {
+        name: FormData.get('name') as string,
+        description: FormData.get('description') as string,
+        price: price,
+        categories: Array.from(FormData.getAll('categories'))
+          .map((genre) => genre.toString().split(','))
+          .flat(),
+        genres: Array.from(FormData.getAll('genres'))
+          .map((genre) => genre.toString().split(','))
+          .flat(),
+        mainImage: mainImageId as string,
+        secondImage: secondImageId as string,
+        thirdImage: thirdImageId as string,
+      }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.log(
+      'Une erreur est survenue lors de la modification du produit',
+      error
+    );
+    return {
+      error: 'Une erreur est survenue lors de la modification du produit',
+    };
+  }
+};

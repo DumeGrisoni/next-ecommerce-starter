@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+
 import { getAllProducts } from '@/actions/productsCRUD';
 
 const NewProducts = async () => {
@@ -12,8 +13,6 @@ const NewProducts = async () => {
   });
   const products = sortedProducts.slice(0, 4);
 
-  console.log(products.map((product) => product.$createdAt));
-
   const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES;
   const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
   return (
@@ -24,7 +23,7 @@ const NewProducts = async () => {
         return (
           <Link
             key={product.$id}
-            href={'/test'}
+            href={`/${product.$id}`}
             className="w-full flex flex-col gap-4 md:w-[45%] lg:w-[22%]"
           >
             <div className="relative w-full h-80">

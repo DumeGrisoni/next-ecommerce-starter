@@ -1,4 +1,5 @@
 import { Models } from 'node-appwrite';
+import { Categories } from './Categories';
 
 export type Product = Models.Document & {
   name: string;
@@ -8,7 +9,7 @@ export type Product = Models.Document & {
   thirdImage: string;
   price: number;
   rating: number;
-  category: string;
+  categories: Categories[];
   ofWeek: boolean;
-  genre: string;
+  genres: string[];
 };

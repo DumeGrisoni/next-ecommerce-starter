@@ -1,6 +1,8 @@
 import React from 'react';
 
-const CustomizeProduct = () => {
+import { Product } from '@/types/Product';
+
+const CustomizeProduct = async ({ product }: { product: Product }) => {
   return (
     <section className="flex flex-col gap-6 ">
       <h4 className="dont-medium">Couleur</h4>

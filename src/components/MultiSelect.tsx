@@ -16,11 +16,22 @@ interface ISelectProps {
   name: string;
   id: string;
   onChange: (items: { key: string; value: string }[]) => void;
+  defaultValues?: { key: string; value: string }[];
 }
-const MultiSelect = ({ values, name, onChange }: ISelectProps) => {
+const MultiSelect = ({
+  values,
+  name,
+  onChange,
+  defaultValues,
+}: ISelectProps) => {
   const [selectedItems, setSelectedItems] = useState<
     { key: string; value: string }[]
-  >([]);
+  >(
+    (defaultValues || []).map((defaultValue) => ({
+      key: defaultValue.key,
+      value: defaultValue.value,
+    }))
+  );
   const handleSelectChange = (value: { key: string; value: string }) => {
     let newItems = [...selectedItems];
     const existingItem = newItems.find((item) => item.key === value.key);
@@ -29,13 +40,26 @@ const MultiSelect = ({ values, name, onChange }: ISelectProps) => {
     } else {
       newItems.push({ key: value.key, value: value.value });
     }
+    // Si la valeur est une valeur par défaut, on l'enlève des valeurs par défaut
+    if (defaultValues?.find((item) => item.key === value.key)) {
+      const newDefaultValues = defaultValues.filter(
+        (item) => item.key !== value.key
+      );
+      // Mettre à jour les valeurs par défaut
+      defaultValues = newDefaultValues;
+    }
     setSelectedItems(newItems);
     onChange(newItems);
   };
 
   useEffect(() => {
-    console.log('Multi', selectedItems);
-  }, [selectedItems]);
+    setSelectedItems(
+      (defaultValues || []).map((defaultValue) => ({
+        key: defaultValue.key,
+        value: defaultValue.value,
+      }))
+    );
+  }, [defaultValues]);
 
   const isOptionSelected = (key: string): boolean => {
     return selectedItems.find((item) => item.key === key) !== undefined;

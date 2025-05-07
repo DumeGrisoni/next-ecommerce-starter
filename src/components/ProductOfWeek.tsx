@@ -18,7 +18,7 @@ const ProductOfWeek = async () => {
         return (
           <Link
             key={product.$id}
-            href={'/test'}
+            href={`/${product.$id}`}
             className="w-full flex flex-col gap-4 md:w-[45%] lg:w-[22%]"
           >
             <div className="relative w-full h-80">

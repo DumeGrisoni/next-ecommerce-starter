@@ -1,15 +1,25 @@
 'use client';
-import React, { use, useCallback, useEffect, useRef, useState } from 'react';
-
 import { getAllCategories } from '@/actions/categoriesCRUD';
+import { getOneProduct, updateProduct } from '@/actions/productsCRUD';
 import MultiSelect from '@/components/MultiSelect';
 import { Button } from '@/components/ui/button';
-import { useFormState } from 'react-dom';
-import { createProduct } from '@/actions/productsCRUD';
-import { toast } from 'react-toastify';
+import { Product } from '@/types/Product';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { toast } from 'react-toastify';
 
-const AdminAddProduct = () => {
+const UpdateProduct = ({ params }: { params: { id: string } }) => {
+  const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES;
+  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+
+  const [product, setProduct] = useState<Product>({} as Product);
+  const [oldCategories, setOldCategories] = useState<
+    { key: string; value: string }[]
+  >([]);
+  const router = useRouter();
+
   const [categoriesReturn, setCategoriesReturn] = useState<
     { key: string; value: string }[]
   >([]);
@@ -20,8 +30,6 @@ const AdminAddProduct = () => {
     { key: string; value: string }[]
   >([]);
 
-  const router = useRouter();
-
   const genres = [
     { key: 'Homme', value: 'Homme' },
     { key: 'Femme', value: 'Femme' },
@@ -30,7 +38,7 @@ const AdminAddProduct = () => {
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [data, action, isPending] = useFormState(createProduct, undefined);
+  const [data, action, isPending] = useFormState(updateProduct, undefined);
 
   const handleCategoriesChange = useCallback(
     (values: { key: string; value: string }[]) => {
@@ -38,6 +46,7 @@ const AdminAddProduct = () => {
     },
     []
   );
+
   const handleGenreChange = useCallback(
     (values: { key: string; value: string }[]) => {
       setSelectedGenres(values);
@@ -45,33 +54,69 @@ const AdminAddProduct = () => {
     []
   );
 
-  const getDatas = async () => {
-    const catData = await getAllCategories();
-
-    if (catData) {
-      const categories = catData.map((category) => ({
-        key: category.$id,
-        value: category.name,
-      }));
-      setCategoriesReturn(categories);
-    }
-  };
-
   useEffect(() => {
+    const getDatas = async () => {
+      const catData = await getAllCategories();
+      const productData = await getOneProduct(params.id);
+
+      if (productData) {
+        const defaultCategories = catData
+          .filter((category) => {
+            return productData.categories.some(
+              (cat) => cat.$id === category.$id
+            );
+          })
+          .map((category) => {
+            return { key: category.$id, value: category.name };
+          });
+        setOldCategories(defaultCategories);
+        setProduct(productData as Product);
+      }
+
+      if (catData) {
+        const categories = catData.map((category) => ({
+          key: category.$id,
+          value: category.name,
+        }));
+        setCategoriesReturn(categories);
+      }
+    };
     getDatas();
-  }, []);
+  }, [params]);
 
   useEffect(() => {
     if (data) {
       if (data.error) {
         toast.error(data.error);
       } else if (data.success) {
-        toast.success('Produit ajouté', { autoClose: 2000 });
-        formRef.current?.reset();
-        router.push(`/profile/admin/products/${data.id}`);
+        toast.success('Produit modifié', { autoClose: 2000 });
+        router.push('/profile/admin');
       }
     }
   }, [data, router]);
+
+  useEffect(() => {
+    if (oldCategories.length > 0) {
+      setSelectedCategories(oldCategories);
+    } else {
+      setSelectedCategories([]);
+    }
+    if (product && product.genres && product.genres.length > 0) {
+      setSelectedGenres(
+        product.genres.map((genre) => ({ key: genre, value: genre }))
+      );
+    } else {
+      setSelectedGenres([]);
+    }
+  }, [oldCategories, product]);
+
+  if (!product) {
+    return <div>Aucun produit trouvé</div>;
+  }
+
+  const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${product.mainImage}/view?project=${projectId}`;
+  const igmUrl2 = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${product.secondImage}/view?project=${projectId}`;
+  const imgUrl3 = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${product.thirdImage}/view?project=${projectId}`;
 
   return (
     <main className="flex mt-12 flex-col w-full mx-auto items-center justify-center gap-3">
@@ -81,6 +126,14 @@ const AdminAddProduct = () => {
           action={action}
           className="flex flex-col w-full items-center justify-center gap-8"
         >
+          <input
+            type="text"
+            name="id"
+            value={product.$id}
+            hidden
+            readOnly
+            className=""
+          />
           <div className="flex flex-col md:flex-row mx-auto w-full px-4 md:px-8 lg:px-32 gap-3 items-center justify-center">
             <div className="flex flex-col md:flex-row md:w-2/3 mx-auto w-full px-4 gap-2 items-center justify-center">
               <label htmlFor="name" className="text-slate-600 font-semibold">
@@ -89,7 +142,8 @@ const AdminAddProduct = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="Nom"
+                defaultValue={product.name}
+                placeholder={product.name}
                 className="ring-1 flex-1 w-full py-3 px-4 ring-slate-200 rounded-md pl-2 text-sm md:text-medium bg-transparent outline-none"
               />
             </div>
@@ -101,7 +155,7 @@ const AdminAddProduct = () => {
               <input
                 type="text"
                 name="price"
-                placeholder="Prix"
+                defaultValue={product.price}
                 className="ring-1 w-full py-3 px-4 ring-slate-200 rounded-md pl-2 text-sm md:text-medium bg-transparent outline-none"
               />
             </div>
@@ -115,6 +169,7 @@ const AdminAddProduct = () => {
                 Catégories
               </label>
               <MultiSelect
+                defaultValues={selectedCategories}
                 id="categories"
                 name="Catégories"
                 values={categoriesReturn}
@@ -123,9 +178,11 @@ const AdminAddProduct = () => {
               <input
                 type="hidden"
                 name="categories"
-                value={selectedCategories.map((cat) => cat.key).join(',')}
+                defaultValue={selectedCategories
+                  .map((cat) => cat.key)
+                  .join(',')}
               />
-              <p>{selectedCategories.map((cat) => cat.value).join(',')}</p>
+              <p>{selectedCategories.map((cat) => cat.value).join(', ')}</p>
             </div>
             <div className="flex flex-col lg:flex-row lg:w-1/2 mx-auto w-full gap-2 items-center justify-center">
               <label htmlFor="genres" className="text-slate-600 font-semibold">
@@ -133,6 +190,7 @@ const AdminAddProduct = () => {
               </label>
 
               <MultiSelect
+                defaultValues={selectedGenres}
                 id="genres"
                 name="Genres"
                 values={genres}
@@ -141,8 +199,9 @@ const AdminAddProduct = () => {
               <input
                 type="hidden"
                 name="genres"
-                value={[...selectedGenres.map((genre) => genre.value)]}
+                defaultValue={[...selectedGenres.map((genre) => genre.value)]}
               />
+              <p>{selectedGenres.map((genre) => genre.value).join(', ')}</p>
             </div>
           </div>
 
@@ -156,33 +215,46 @@ const AdminAddProduct = () => {
             <textarea
               rows={6}
               name="description"
-              placeholder="Description"
+              defaultValue={product.description}
               className=" flex-1 ring-1 w-full mx-auto py-3 px-4  ring-slate-200 rounded-md pl-2 text-sm md:text-medium bg-transparent outline-none"
             />
           </div>
-          <div className="flex flex-col lg:flex-row mx-auto w-full gap-8 px-4 md:px-8 lg:px-32 items-center justify-center">
-            <div className="flex flex-col lg:flex-row lg:w-1/3 mx-auto w-full px-4 gap-3 items-center justify-center">
+          <div className="flex flex-col lg:flex-row mx-auto w-full gap-8 px-4 md:px-8 lg:px-16 xl:px-32 items-center justify-center">
+            <div className="flex flex-col lg:w-1/3 mx-auto w-full px-4 gap-3 lg:gap-6 items-center justify-center">
               <label
                 htmlFor="mainImage"
                 className="text-slate-600 font-semibold"
               >
                 Image Principale
               </label>
+              <Image
+                src={imageUrl}
+                alt={'image principale'}
+                width={100}
+                height={100}
+              />
               <button>
                 <input
                   type="file"
                   name="mainImage"
+                  placeholder="Changer l'image"
                   className="focus:outline-none "
                 />
               </button>
             </div>
-            <div className="flex flex-col lg:flex-row lg:w-1/3 mx-auto w-full px-4 gap-2 items-center justify-center">
+            <div className="flex flex-col  lg:w-1/3 mx-auto w-full px-4 gap-2 lg:gap-6  items-center justify-center">
               <label
                 htmlFor="secondImage"
                 className="text-slate-600 font-semibold"
               >
-                Image 2
+                Seconde Image
               </label>
+              <Image
+                src={igmUrl2}
+                alt={'image secondaire'}
+                width={100}
+                height={100}
+              />
               <button>
                 <input
                   type="file"
@@ -191,15 +263,22 @@ const AdminAddProduct = () => {
                 />
               </button>
             </div>
-            <div className="flex flex-col lg:flex-row lg:w-1/3 mx-auto w-full px-4 gap-2 items-center justify-center">
+            <div className="flex flex-col lg:w-1/3 mx-auto w-full px-4 gap-2 lg:gap-6  items-center justify-center">
               <label
                 htmlFor="thirdImage"
                 className="text-slate-600 font-semibold"
               >
-                Image 3
+                Troisième image
               </label>
+              <Image
+                src={imgUrl3}
+                alt={'image tertiaire'}
+                width={100}
+                height={100}
+              />
               <button>
                 <input
+                  placeholder="Changer l'image"
                   type="file"
                   name="thirdImage"
                   className="focus:outline-none "
@@ -213,7 +292,7 @@ const AdminAddProduct = () => {
             type="submit"
             className="w-[70%]"
           >
-            Créer le Produit
+            Modifier le produit
           </Button>
         </form>
       </section>
@@ -221,4 +300,4 @@ const AdminAddProduct = () => {
   );
 };
 
-export default AdminAddProduct;
+export default UpdateProduct;

@@ -9,6 +9,7 @@ const CategoryList = async () => {
   const categories = await getAllCategories();
 
   if (!categories) return null;
+
   return (
     <section className="px-4 overflow-x-scroll scrollbar-x scrollbar-hide">
       <div className="flex gap-4 md:gap-8">
@@ -17,7 +18,7 @@ const CategoryList = async () => {
           return (
             <Link
               key={category.$id}
-              href={`/list?cat=test`}
+              href={`/list?cat=${category.$id}`}
               className="flex-shrink-0 w-[90%] sm:w-1/2 lg:w-1/4 xl:w-1/6"
             >
               <div className="relative bg-gray-slate-100 w-full h-96">
