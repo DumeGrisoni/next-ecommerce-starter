@@ -1,14 +1,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { Product } from '@/types/Product';
+import { wixClientServer } from '@/lib/wixClientServer';
 
-const ProductOfWeek = ({ productsData }: { productsData: Product[] }) => {
-  const filtered = productsData.filter((product) => product.ofWeek === true);
-  const products = filtered.slice(0, 4);
+const ProductOfWeek = async ({
+  categoryId,
+  limit,
+}: {
+  categoryId: string;
+  limit: number;
+}) => {
+  const wixClient = await wixClientServer();
 
-  const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES;
-  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+  const res = await wixClient.products.queryProducts().limit(limit).find();
+  console.log(res);
   return (
     <div className=" mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
       {products.map((product) => {

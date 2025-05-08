@@ -72,4 +72,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  .color-option::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: inherit;
+    margin-right: 4px;
+  }
 }

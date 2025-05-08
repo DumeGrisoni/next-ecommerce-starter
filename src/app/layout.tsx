@@ -3,8 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import AuthWrapper from '@/components/AuthWrapper';
 import { ToastContainer } from 'react-toastify';
+import { WixClientContextProvider } from '@/context/wixContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,15 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthWrapper>
-      <html lang="fr">
-        <body className={inter.className}>
-          <Navbar />
+    <html lang="fr">
+      <body className={inter.className}>
+        <WixClientContextProvider>
+          {/* <Navbar /> */}
           {children}
           <Footer />
           <ToastContainer />
-        </body>
-      </html>
-    </AuthWrapper>
+        </WixClientContextProvider>
+      </body>
+    </html>
   );
 }

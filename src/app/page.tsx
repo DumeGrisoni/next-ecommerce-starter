@@ -1,17 +1,28 @@
-import { getAllProducts } from '@/actions/productsCRUD';
 import CategoryList from '@/components/CategoryList';
 import NewProducts from '@/components/NewProducts';
+import ProductList from '@/components/ProductList';
 import ProductOfWeek from '@/components/ProductOfWeek';
 import Slider from '@/components/Slider';
+import { wixClientServer } from '@/lib/wixClientServer';
+import { Suspense } from 'react';
 
 const HomePage = async () => {
-  const products = await getAllProducts();
+  // const wixClient = await wixClientServer();
+
+  // const res = await wixClient.products.queryProducts().find();
+  // console.log(res);
+
   return (
     <div className="">
       <Slider />
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <h1 className="text-2xl">Produits de la semaine</h1>
-        <ProductOfWeek productsData={products} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProductList
+            categoryId={process.env.WIX_CATEGORY_FEATURED as string}
+            limit={4}
+          />
+        </Suspense>
       </div>
       <div className="mt-24">
         <h1 className="text-2xl mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 mb-12">
@@ -21,7 +32,7 @@ const HomePage = async () => {
       </div>
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <h1 className="text-2xl">Nouveautés</h1>
-        <NewProducts productsData={products} />
+        {/* <NewProducts productsData={products} /> */}
       </div>
     </div>
   );

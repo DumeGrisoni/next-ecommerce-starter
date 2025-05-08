@@ -287,9 +287,9 @@ const UpdateProduct = ({ params }: { params: { id: string } }) => {
               </button>
             </div>
           </div>
-          <div>
+          <div className="flex flex-col gap-6 items-center justify-center">
             <label htmlFor="sizes" className="text-slate-600 font-semibold">
-              Tailles
+              Couleurs & Tailles
             </label>
             {/* AJOUTER LE SYSTEME */}
             <AdminAddColors product={product} />

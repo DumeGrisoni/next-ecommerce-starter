@@ -25,6 +25,9 @@ const nextConfig = {
       {
         hostname: 'cloud.appwrite.io',
       },
+      {
+        hostname: 'utfs.io',
+      },
     ],
   },
 };

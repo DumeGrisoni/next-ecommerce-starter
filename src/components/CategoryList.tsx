@@ -1,4 +1,4 @@
-import { getAllCategories } from '@/actions/categoriesCRUD';
+// import { getAllCategories } from '@/actions/categoriesCRUD';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -6,14 +6,14 @@ import React from 'react';
 const CategoryList = async () => {
   const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_IMAGES;
   const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
-  const categories = await getAllCategories();
+  // const categories = await getAllCategories();
 
-  if (!categories) return null;
+  // if (!categories) return null;
 
   return (
     <section className="px-4 overflow-x-scroll scrollbar-x scrollbar-hide">
       <div className="flex gap-4 md:gap-8">
-        {categories.map((category) => {
+        {/* {categories.map((category) => {
           const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${category.categoryImage}/view?project=${projectId}`;
           return (
             <Link
@@ -35,7 +35,7 @@ const CategoryList = async () => {
               </h1>
             </Link>
           );
-        })}
+        })} */}
       </div>
     </section>
   );
