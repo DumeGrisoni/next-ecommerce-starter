@@ -5,8 +5,10 @@ import DOMPurify from 'isomorphic-dompurify';
 
 import { wixClientServer } from '@/lib/wixClientServer';
 import { products } from '@wix/stores';
+import Pagination from './Pagination';
+import ProductPerPage from './ProductPerPage';
 
-const PRODUCT_PER_PAGE = 20;
+let PRODUCT_PER_PAGE = 8;
 
 const ProductList = async ({
   categoryId,
@@ -40,7 +42,7 @@ const ProductList = async ({
     .eq('collectionIds', categoryId)
     .gt('priceData.price', searchParams?.min || 0)
     .lt('priceData.price', searchParams?.max || 999999)
-    .limit(limit || PRODUCT_PER_PAGE)
+    .limit(searchParams?.limit || PRODUCT_PER_PAGE || limit)
     .skip(
       searchParams?.page
         ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
@@ -48,67 +50,76 @@ const ProductList = async ({
     );
 
   if (searchParams?.sort) {
-    const sortType = searchParams.sort.split(' ');
-    if (sortType[0] === 'asc') {
-      productQuery = productQuery.ascending('price');
+    const [sortType, sortBy] = searchParams.sort.split(' ');
+    if (sortType === 'asc') {
+      productQuery = productQuery.ascending(sortBy);
     }
-    if (sortType[0] === 'desc') {
-      productQuery = productQuery.descending('price');
+    if (sortType === 'desc') {
+      productQuery = productQuery.descending(sortBy);
     }
   }
 
   const res = await productQuery.find();
 
   return (
-    <div className=" mt-12 flex gap-x-8 gap-y-16 justify-start flex-wrap">
-      {res.items.map((product: products.Product) => {
-        return (
-          <Link
-            key={product._id}
-            href={`/${product.slug}`}
-            className="w-full flex flex-col gap-4 md:w-[45%] lg:w-[22%]"
-          >
-            <div className="relative w-full h-80">
-              <Image
-                src={product.media?.mainMedia?.image?.url || '/product.png'}
-                fill
-                alt={'image principale'}
-                sizes="25vw"
-                className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity duration-500"
-              />
-              {product.media?.items && (
+    <section className="flex flex-col gap-8 mt-12 ">
+      <ProductPerPage />
+      <div className="flex gap-x-8 gap-y-16 justify-start flex-wrap">
+        {res.items.map((product: products.Product) => {
+          return (
+            <Link
+              key={product._id}
+              href={`/${product.slug}`}
+              className="w-full flex flex-col gap-4 md:w-[45%] lg:w-[22%]"
+            >
+              <div className="relative w-full h-80">
                 <Image
-                  src={product.media?.items[1]?.image?.url || '/product.png'}
-                  alt=""
+                  src={product.media?.mainMedia?.image?.url || '/product.png'}
                   fill
+                  alt={'image principale'}
                   sizes="25vw"
-                  className="absolute object-cover rounded-md"
+                  className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity duration-500"
                 />
+                {product.media?.items && (
+                  <Image
+                    src={product.media?.items[1]?.image?.url || '/product.png'}
+                    alt=""
+                    fill
+                    sizes="25vw"
+                    className="absolute object-cover rounded-md"
+                  />
+                )}
+              </div>
+              <div className="flex justify-between">
+                <span className="font-light">{product.name}</span>
+                <span className="font-semibold">
+                  {product.priceData?.price} €
+                </span>
+              </div>
+              {product.description && (
+                <div
+                  className="text-sm mt-auto text-gray-500"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      product.description.substring(0, 140) + '...' || ''
+                    ),
+                  }}
+                ></div>
               )}
-            </div>
-            <div className="flex justify-between">
-              <span className="font-light">{product.name}</span>
-              <span className="font-semibold">
-                {product.priceData?.price} €
-              </span>
-            </div>
-            {product.description && (
-              <div
-                className="text-sm mt-auto text-gray-500"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(
-                    product.description.substring(0, 140) + '...' || ''
-                  ),
-                }}
-              ></div>
-            )}
-            <button className="text-xs w-max hover:bg-primary hover:text-white rounded-2xl ring-1 ring-primary text-primary py-2 px-4">
-              Ajouter au panier
-            </button>
-          </Link>
-        );
-      })}
-    </div>
+              <button className="text-xs w-max hover:bg-primary hover:text-white rounded-2xl ring-1 ring-primary text-primary py-2 px-4">
+                Ajouter au panier
+              </button>
+            </Link>
+          );
+        })}
+      </div>
+      <Pagination
+        currentPage={res.currentPage || 0}
+        hasPrevious={res.hasPrev()}
+        hasNext={res.hasNext()}
+        totalPages={res.totalPages || 0}
+      />
+    </section>
   );
 };
 
