@@ -1,17 +1,9 @@
 import CategoryList from '@/components/CategoryList';
-import NewProducts from '@/components/NewProducts';
 import ProductList from '@/components/ProductList';
-import ProductOfWeek from '@/components/ProductOfWeek';
 import Slider from '@/components/Slider';
-import { wixClientServer } from '@/lib/wixClientServer';
 import { Suspense } from 'react';
 
 const HomePage = async () => {
-  // const wixClient = await wixClientServer();
-
-  // const res = await wixClient.products.queryProducts().find();
-  // console.log(res);
-
   return (
     <div className="">
       <Slider />

@@ -1,16 +1,21 @@
 'use client';
 import React, { useState } from 'react';
 
-const Add = () => {
+const Add = ({
+  productId,
+  variantId,
+  stockNumber,
+}: {
+  productId: string;
+  variantId: string;
+  stockNumber: number;
+}) => {
   const [quantity, setQuantity] = useState(1);
-
-  //TEMPORAIRE
-  const stock = 5;
 
   const handleQuantity = (type: string) => {
     if (type === 'd' && quantity > 1) {
       setQuantity(quantity - 1);
-    } else if (type === 'i' && quantity < stock) {
+    } else if (type === 'i' && quantity < stockNumber) {
       setQuantity(quantity + 1);
     }
   };
@@ -38,12 +43,12 @@ const Add = () => {
           </div>
           <div className="text-xs">
             Il ne reste que{' '}
-            <span className="text-orange-500">{stock} exemplaires</span> !
+            <span className="text-orange-500">{stockNumber} exemplaires</span> !
             <br /> Profitez-en !
           </div>
         </div>
 
-        <button className="w-40 text-sm rounded-3xl ring-1 ring-primary text-primary py-2 px-4 hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
+        <button className="w-36 text-sm rounded-3xl ring-1 ring-primary text-primary py-2 px-4 hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
           Ajouter au panier
         </button>
       </div>

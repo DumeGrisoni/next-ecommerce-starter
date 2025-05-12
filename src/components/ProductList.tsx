@@ -11,20 +11,56 @@ const PRODUCT_PER_PAGE = 20;
 const ProductList = async ({
   categoryId,
   limit,
+  searchParams,
 }: {
   categoryId: string;
   limit?: number;
+  searchParams?: any;
 }) => {
   const wixClient = await wixClientServer();
+  const genres = {
+    homme: process.env.WIX_CATEGORY_MAN,
+    femme: process.env.WIX_CATEGORY_WOMAN,
+    enfant: process.env.WIX_CATEGORY_KID,
+  };
 
-  const res = await wixClient.products
+  let productQuery = wixClient.products
     .queryProducts()
+    .startsWith('name', searchParams?.name || '')
+    .hasSome(
+      'collectionIds',
+      searchParams?.genre === 'homme'
+        ? [genres.homme]
+        : searchParams?.genre === 'femme'
+        ? [genres.femme]
+        : searchParams?.genre === 'enfant'
+        ? [genres.enfant]
+        : [categoryId]
+    )
     .eq('collectionIds', categoryId)
+    .gt('priceData.price', searchParams?.min || 0)
+    .lt('priceData.price', searchParams?.max || 999999)
     .limit(limit || PRODUCT_PER_PAGE)
-    .find();
-  console.log(res);
+    .skip(
+      searchParams?.page
+        ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
+        : 0
+    );
+
+  if (searchParams?.sort) {
+    const sortType = searchParams.sort.split(' ');
+    if (sortType[0] === 'asc') {
+      productQuery = productQuery.ascending('price');
+    }
+    if (sortType[0] === 'desc') {
+      productQuery = productQuery.descending('price');
+    }
+  }
+
+  const res = await productQuery.find();
+
   return (
-    <div className=" mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
+    <div className=" mt-12 flex gap-x-8 gap-y-16 justify-start flex-wrap">
       {res.items.map((product: products.Product) => {
         return (
           <Link
@@ -52,7 +88,9 @@ const ProductList = async ({
             </div>
             <div className="flex justify-between">
               <span className="font-light">{product.name}</span>
-              <span className="font-semibold">{product.priceData?.price}€</span>
+              <span className="font-semibold">
+                {product.priceData?.price} €
+              </span>
             </div>
             {product.description && (
               <div
