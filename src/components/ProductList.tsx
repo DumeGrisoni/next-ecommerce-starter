@@ -14,10 +14,12 @@ const ProductList = async ({
   categoryId,
   limit,
   searchParams,
+  isModifiable,
 }: {
   categoryId: string;
   limit?: number;
   searchParams?: any;
+  isModifiable: boolean;
 }) => {
   const wixClient = await wixClientServer();
   const genres = {
@@ -42,7 +44,7 @@ const ProductList = async ({
     .eq('collectionIds', categoryId)
     .gt('priceData.price', searchParams?.min || 0)
     .lt('priceData.price', searchParams?.max || 999999)
-    .limit(searchParams?.limit || PRODUCT_PER_PAGE || limit)
+    .limit(limit || searchParams?.limit || PRODUCT_PER_PAGE)
     .skip(
       searchParams?.page
         ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
@@ -63,7 +65,7 @@ const ProductList = async ({
 
   return (
     <section className="flex flex-col gap-8 mt-12 ">
-      <ProductPerPage />
+      {isModifiable && <ProductPerPage />}
       <div className="flex gap-x-8 gap-y-16 justify-start flex-wrap">
         {res.items.map((product: products.Product) => {
           return (
@@ -113,12 +115,14 @@ const ProductList = async ({
           );
         })}
       </div>
-      <Pagination
-        currentPage={res.currentPage || 0}
-        hasPrevious={res.hasPrev()}
-        hasNext={res.hasNext()}
-        totalPages={res.totalPages || 0}
-      />
+      {isModifiable && (
+        <Pagination
+          currentPage={res.currentPage || 0}
+          hasPrevious={res.hasPrev()}
+          hasNext={res.hasNext()}
+          totalPages={res.totalPages || 0}
+        />
+      )}
     </section>
   );
 };

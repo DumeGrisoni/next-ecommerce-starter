@@ -13,13 +13,15 @@ const Navbar = () => {
   return (
     <nav className="h-20 max-w-screen px-3 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative">
       {/* MOBILE  */}
-      <div className="h-full overflow-x-hidden flex items-center justify-between lg:hidden">
+      <div className="h-full  flex items-center justify-between lg:hidden">
         <Link href={'/'}>
-          <p className="md:text-2xl text-xl tracking-wide">NOVAMARKET</p>
+          <p className="md:text-2xl text-xs md:tracking-wide">NOVAMARKET</p>
         </Link>
         <SearchBar />
+        <NavIcons />
         <Menu isDesktop={false} />
       </div>
+
       {/* TABLET & PC */}
       <div className="hidden lg:flex items-center h-full justify-between gap-8">
         {/* LFT */}

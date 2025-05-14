@@ -37,8 +37,9 @@ const List = async ({ searchParams }: { searchParams: any }) => {
           : cat?.collection?.name}{' '}
         rien que pour vous!
       </h1>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>Chargement...</div>}>
         <ProductList
+          isModifiable
           categoryId={
             cat.collection?._id || '00000000-000000-000000-000000000001'
           }

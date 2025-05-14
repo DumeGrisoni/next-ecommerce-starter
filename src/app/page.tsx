@@ -13,6 +13,7 @@ const HomePage = () => {
           <ProductList
             categoryId={process.env.WIX_CATEGORY_FEATURED as string}
             limit={4}
+            isModifiable={false}
           />
         </Suspense>
       </div>
@@ -24,7 +25,11 @@ const HomePage = () => {
       </div>
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <h1 className="text-2xl">Nouveautés</h1>
-        {/* <NewProducts productsData={products} /> */}
+        <ProductList
+          categoryId={'00000000-000000-000000-000000000001'}
+          limit={4}
+          isModifiable={false}
+        />
       </div>
     </div>
   );

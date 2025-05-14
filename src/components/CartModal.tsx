@@ -49,7 +49,7 @@ const CartModal = () => {
   }, [cart]);
 
   return (
-    <div className="absolute w-max flex flex-col gap-6 bg-white z-20 top-12 right-0 text-sm p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+    <div className="absolute w-max flex flex-col gap-6 bg-white z-20 top-12 -translate-x-2/3 md:-translate-x-0 md:right-0 text-sm p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
       {!cart.lineItems ? (
         <p>Votre panier est vide</p>
       ) : (
@@ -58,7 +58,7 @@ const CartModal = () => {
           <div className="flex flex-col gap-8">
             {/* ITEM */}
             {cart.lineItems.map((item) => (
-              <div className="flex gap-4" key={item._id}>
+              <div className="flex gap-2 md:gap-4" key={item._id}>
                 {item.image && (
                   <Image
                     src={wixMedia.getScaledToFillImageUrl(
@@ -77,11 +77,11 @@ const CartModal = () => {
                   {/* TOP */}
                   <div>
                     <div>
-                      <div className="flex items-center justify-between gap-8">
+                      <div className="flex flex-col md:flex-row items-start mb-2 md:mb-0 md:items-center justify-between gap-2 md:gap-8">
                         <h3 className="font-semibold">
                           {item.productName?.original}
                         </h3>
-                        <div className="p-1 items-center justify-center rounded-sm flex flex-row gap-2">
+                        <div className="p-1 items-center justify-center rounded-sm flex flex-row gap-1 md:gap-2">
                           {item.quantity && item.quantity > 1 && (
                             <div className="text-xs text-gray-500">
                               {item.quantity} X{' '}

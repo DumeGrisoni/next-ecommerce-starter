@@ -15,8 +15,8 @@ const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
           <Image
             src={'/menu.png'}
             alt={'menu'}
-            width={28}
-            height={28}
+            width={20}
+            height={20}
             className="cursor-pointer"
             onClick={() => setOpen(!open)}
           />
@@ -43,14 +43,6 @@ const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
                 className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
               >
                 Promos
-              </Link>
-
-              <Link
-                onClick={() => setOpen(false)}
-                href={'/cart'}
-                className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
-              >
-                Panier(1)
               </Link>
             </div>
           )}
