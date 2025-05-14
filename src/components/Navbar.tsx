@@ -4,7 +4,10 @@ import Image from 'next/image';
 
 import Menu from './Menu';
 import SearchBar from './SearchBar';
-import NavBarIcons from './NavBarIcons';
+import dynamic from 'next/dynamic';
+// import NavBarIcons from './NavBarIcons';
+
+const NavIcons = dynamic(() => import('./NavBarIcons'), { ssr: false });
 
 const Navbar = () => {
   return (
@@ -30,7 +33,7 @@ const Navbar = () => {
         {/* RIGHT */}
         <div className="lg:w-1/2 w-2/3 flex items-center justify-between gap-8">
           <SearchBar />
-          <NavBarIcons />
+          <NavIcons />
         </div>
       </div>
     </nav>

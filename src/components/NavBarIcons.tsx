@@ -1,21 +1,22 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 
 import CartModal from './CartModal';
-import destroySession from '@/actions/destroySession';
-import { useAuth } from '@/context/authContext';
+import { useWixClient } from '@/hooks/useWixClient';
+import { useCartStore } from '@/hooks/useCartStore';
 
 const NavBarIcons = () => {
-  const { user, isUserAuthenticated, setIsUserAuthenticated, setUser } =
-    useAuth();
-
   const [isProfilOpen, setIsProfilOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const wixClient = useWixClient();
   const router = useRouter();
+  const { cart, counter, getCart } = useCartStore();
+
+  const isLoggedIn = wixClient.auth.loggedIn();
 
   const handleCart = () => {
     setIsProfilOpen(false);
@@ -24,30 +25,26 @@ const NavBarIcons = () => {
 
   const handleProfile = () => {
     setIsCartOpen(false);
-    setIsProfilOpen(!isProfilOpen);
+    if (!isLoggedIn) {
+      setIsProfilOpen(false);
+      router.push('/login');
+    } else {
+      setIsProfilOpen(!isProfilOpen);
+    }
   };
 
   const handleLogout = async () => {
-    const { error, success } = await destroySession();
-    if (error) {
-      console.log(error);
-      toast.error(error, {
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-    } else if (success) {
-      setIsUserAuthenticated(false);
-      setUser(null);
-      router.push('/login');
-    }
-    setIsCartOpen(false);
+    setIsLoading(true);
+    Cookies.remove('refreshToken');
+    const { logoutUrl } = await wixClient.auth.logout(window.location.href);
+    setIsLoading(false);
     setIsProfilOpen(false);
+    router.push(logoutUrl);
   };
+
+  useEffect(() => {
+    getCart(wixClient);
+  }, [wixClient, getCart]);
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
@@ -57,36 +54,17 @@ const NavBarIcons = () => {
         height={22}
         alt={'profile'}
         className="cursor-pointer"
-        onClick={() => {
-          isUserAuthenticated ? handleProfile() : router.push('/login');
-        }}
+        onClick={handleProfile}
       />
       {isProfilOpen && (
         <div className="absolute w-max bg-white flex flex-col gap-4 z-20 top-12 left-0 text-sm p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)] ">
-          <h1 className="text-gray-500 text-sm">{user?.name}</h1>
+          <h1 className="text-gray-500  text-center">{'Profil'}</h1>
           <div className="h-px bg-gray-200 w-full" />
-          {user?.labels.includes('admin') ? (
-            <Link
-              href={'/profile/admin'}
-              className=" hover:bg-gray-200 p-2 rounded-md"
-              onClick={() => setIsProfilOpen(false)}
-            >
-              Administration
-            </Link>
-          ) : (
-            <Link
-              href={'/profile/user'}
-              className=" hover:bg-gray-200 p-2 rounded-md"
-              onClick={() => setIsProfilOpen(false)}
-            >
-              Profile
-            </Link>
-          )}
           <div
             className=" hover:bg-gray-200 rounded-md p-2 cursor-pointer"
             onClick={handleLogout}
           >
-            Déconnexion
+            {isLoading ? 'Chargement...' : 'Déconnexion'}
           </div>
         </div>
       )}
@@ -106,7 +84,7 @@ const NavBarIcons = () => {
           onClick={() => handleCart()}
         />
         <div className="absolute -top-4 -right-4 w-6 h-6 bg-primary rounded-full text-white flex text-sm items-center justify-center">
-          2
+          {counter}
         </div>
       </div>
       {isCartOpen && <CartModal />}

@@ -1,4 +1,7 @@
 'use client';
+
+import { useCartStore } from '@/hooks/useCartStore';
+import { useWixClient } from '@/hooks/useWixClient';
 import React, { useState } from 'react';
 
 const Add = ({
@@ -11,6 +14,8 @@ const Add = ({
   stockNumber: number;
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const { addItem, isLoading } = useCartStore();
+  const wixClient = useWixClient();
 
   const handleQuantity = (type: string) => {
     if (type === 'd' && quantity > 1) {
@@ -26,7 +31,7 @@ const Add = ({
 
       <div className="flex justify-between">
         <div className="flex items-center gap-4">
-          <div className="bg-gray-100 py-2 px-4 rounded-3xl flex items-center justify-between w-32">
+          <div className="bg-gray-100 py-2 px-4 rounded-md flex items-center justify-between w-32">
             <button
               className="cursor-pointer text-xl"
               onClick={() => handleQuantity('d')}
@@ -48,7 +53,11 @@ const Add = ({
           </div>
         </div>
 
-        <button className="w-36 text-sm rounded-3xl ring-1 ring-primary text-primary py-2 px-4 hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
+        <button
+          onClick={() => addItem(wixClient, productId, variantId, quantity)}
+          disabled={isLoading}
+          className="w-40 text-sm rounded-md ring-1 ring-primary text-primary py-2 px-4 hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-black disabled:ring-0"
+        >
           Ajouter au panier
         </button>
       </div>

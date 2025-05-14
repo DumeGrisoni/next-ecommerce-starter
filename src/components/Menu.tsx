@@ -2,38 +2,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-
-import destroySession from '@/actions/destroySession';
-import { useAuth } from '@/context/authContext';
 
 const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { isUserAuthenticated, user, setIsUserAuthenticated, setUser } =
-    useAuth();
-
-  const handleLogout = async () => {
-    const { error, success } = await destroySession();
-    if (error) {
-      console.log(error);
-      toast.error(error, {
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-    } else if (success) {
-      setIsUserAuthenticated(false);
-      setUser(null);
-      router.push('/login');
-    }
-  };
   return (
     <>
       {!isDesktop ? (
@@ -58,14 +32,14 @@ const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
               </Link>
               <Link
                 onClick={() => setOpen(false)}
-                href={'/shop'}
+                href={'/list'}
                 className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
               >
                 Shop
               </Link>
               <Link
                 onClick={() => setOpen(false)}
-                href={'/ceals'}
+                href={'/deals'}
                 className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
               >
                 Promos
@@ -78,39 +52,6 @@ const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
               >
                 Panier(1)
               </Link>
-              {isUserAuthenticated ? (
-                <>
-                  {user?.labels.includes('admin') ? (
-                    <Link
-                      onClick={() => setOpen(false)}
-                      href={'/profile/admin'}
-                      className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
-                    >
-                      Administration
-                    </Link>
-                  ) : (
-                    <Link
-                      onClick={() => setOpen(false)}
-                      href={'/profile/user'}
-                      className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
-                    >
-                      Profile
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="hover:bg-slate-700 p-2 rounded-md transition-all duration-300 ease-in-out"
-                  >
-                    Déconnexion
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link onClick={() => setOpen(false)} href={'/login'}>
-                    Connexion
-                  </Link>
-                </>
-              )}
             </div>
           )}
         </div>
@@ -123,13 +64,13 @@ const Menu = ({ isDesktop }: { isDesktop: boolean }) => {
             Accueil
           </Link>
           <Link
-            href={'/Shop'}
+            href={'/list'}
             className="hover:bg-slate-200 p-2 rounded-md transition-all duration-300 ease-in-out"
           >
             Shop
           </Link>
           <Link
-            href={'/Deals'}
+            href={'/deals'}
             className="hover:bg-slate-200 p-2 rounded-md transition-all duration-300 ease-in-out"
           >
             Promos
