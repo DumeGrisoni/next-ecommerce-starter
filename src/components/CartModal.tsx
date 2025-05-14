@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { media as wixMedia } from '@wix/sdk';
+import { currentCart } from '@wix/ecom';
 
 import { useWixClient } from '@/hooks/useWixClient';
 import { useCartStore } from '@/hooks/useCartStore';
@@ -10,6 +11,29 @@ const CartModal = () => {
   const wixClient = useWixClient();
   const { cart, removeItem, isLoading } = useCartStore();
   const totalPriceRef = useRef(0);
+
+  const handleCheckOut = async () => {
+    try {
+      const checkOut =
+        await wixClient.currentCart.createCheckoutFromCurrentCart({
+          channelType: currentCart.ChannelType.WEB,
+        });
+      const { redirectSession } =
+        await wixClient.redirects.createRedirectSession({
+          ecomCheckout: { checkoutId: checkOut.checkoutId },
+          callbacks: {
+            postFlowUrl: window.location.origin,
+            thankYouPageUrl: `${window.location.origin}/success`,
+          },
+        });
+
+      if (redirectSession?.fullUrl) {
+        window.location.href = redirectSession.fullUrl;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     function calculateTotalPrice() {
@@ -113,6 +137,7 @@ const CartModal = () => {
               <button
                 className="rounded-md py-3 px-4 bg-black text-white disabled:opacity-75 disabled:cursor-not-allowed"
                 disabled={isLoading}
+                onClick={handleCheckOut}
               >
                 Valider mon panier
               </button>
